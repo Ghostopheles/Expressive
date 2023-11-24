@@ -1,0 +1,23 @@
+## Interface: 100200
+## Title: Expressive
+## Notes: A collection of emotes for the discerning necromancer.
+## Author: Ghost
+## Version: 1
+
+## SavedVariables: ExpressiveConfig, ExpressiveFavorites
+
+## IconTexture: Interface\AddOns\totalRP3\Resources\policegar
+
+## X-Website: https://kivatech.io
+
+Libs/LibStub/LibStub.lua
+Libs/AceLocale-3.0/AceLocale-3.0.xml
+
+Locale/enUS.lua
+
+Core/Globals.lua
+Core/Settings.lua
+Core/Utils.lua
+
+Expressive.lua
+Templates/ExpressiveFrame.xml

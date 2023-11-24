@@ -1,0 +1,5 @@
+<Bindings>
+    <Binding name="Toggle Expressive" header="EmoteBox" category="ADDONS">
+        ExpressiveFrame:Toggle();
+    </Binding>
+</Bindings>
