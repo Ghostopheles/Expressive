@@ -7,8 +7,7 @@
 ## SavedVariables: ExpressiveConfig, ExpressiveFavorites
 
 ## IconTexture: Interface\AddOns\totalRP3\Resources\policegar
-
-## X-Website: https://kivatech.io
+## AddonCompartmentFunc: Expressive_OnAddonCompartmentClick
 
 Libs/LibStub/LibStub.lua
 Libs/AceLocale-3.0/AceLocale-3.0.xml

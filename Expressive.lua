@@ -23,11 +23,7 @@ function ExpressiveFrameEmoteEntryButtonMixin:ToggleFavorite()
         Settings.AddFavorite(emoteToken);
     end
 
-    self:UpdateFavoriteState();
-end
-
-function ExpressiveFrameEmoteEntryButtonMixin:UpdateFavoriteState()
-    self:GetParent().isFavorite = Settings.IsFavorited(self:GetEmoteToken());
+    self:GetParent():UpdateFavoriteState();
 end
 
 function ExpressiveFrameEmoteEntryButtonMixin:OnClick()
@@ -43,14 +39,6 @@ function ExpressiveFrameEmoteEntryButtonMixin:SetIcon(icon)
     self.icon:SetTexture(icon);
 end
 
-function ExpressiveFrameEmoteEntryButtonMixin:SetVoiceIconVisibility(state)
-    self.VoiceIcon:SetShown(state);
-end
-
-function ExpressiveFrameEmoteEntryButtonMixin:SetFavoriteIconVisibility(state)
-    self.FavoriteIcon:SetShown(state);
-end
-
 -----------------
 
 ExpressiveFrameEmoteEntryMixin = {};
@@ -60,31 +48,44 @@ NUM_EMOTES_ADDED = 0;
 EMOTES_ADDED = {};
 
 function ExpressiveFrameEmoteEntryMixin:Init(data)
-    if data.left then
-        local d = data.left;
-        self.Left.Emote = d.emote;
-        self.Left.Button:SetIcon(d.icon);
-        self.Left.Label:SetText(d.name);
-        self.Left:Show();
+    local height = 45;
+    local width = self:GetParent():GetWidth() / 2;
+    self:SetSize(width, height);
 
-        self.Left.Button:SetVoiceIconVisibility(data.left.isVoiceEmote);
-        self.Left.Button:SetFavoriteIconVisibility(data.left.isFavorite);
-    else
-        self.Left:Hide();
-    end
+    self.Emote = data.emote;
+    self.IsFavorite = data.isFavorite;
+    self.IsAnimEmote = data.isAnimEmote;
+    self.IsVoiceEmote = data.isVoiceEmote;
 
-    if data.right then
-        local d = data.right;
-        self.Right.Emote = d.emote;
-        self.Right.Button:SetIcon(d.icon);
-        self.Right.Label:SetText(d.name);
-        self.Right:Show();
+    self.Label:SetText(data.name);
+    self.Button:SetIcon(data.icon);
+    self.Button.VoiceIcon:SetRotation(math.pi/2);
 
-        self.Right.Button:SetVoiceIconVisibility(data.right.isVoiceEmote);
-        self.Right.Button:SetFavoriteIconVisibility(data.right.isFavorite);
-    else
-        self.Right:Hide();
-    end
+    --Ping_OVMarker_Pointer_OnMyWay
+
+    self:UpdateSpecialIconVisibility();
+
+    ExpressiveFrame:RegisterCallback("FavoritesUpdated", self.UpdateFavoriteIconVisibility, self);
+end
+
+function ExpressiveFrameEmoteEntryMixin:UpdateVoiceIconVisibility()
+    self.Button.VoiceIcon:SetShown(self.IsVoiceEmote);
+end
+
+function ExpressiveFrameEmoteEntryMixin:UpdateFavoriteIconVisibility()
+    self.IsFavorite = Settings.IsFavorited(self.Emote);
+    self.Button.FavoriteIcon:SetShown(self.IsFavorite);
+end
+
+function ExpressiveFrameEmoteEntryMixin:UpdateAnimIconVisibility()
+    self.Button.AnimIcon:SetShown(self.IsAnimEmote or self.IsVoiceEmote);
+end
+
+function ExpressiveFrameEmoteEntryMixin:UpdateSpecialIconVisibility()
+    --self.Button.IconBackground:SetShown(self.IsAnimEmote or self.IsVoiceEmote);
+    self:UpdateVoiceIconVisibility();
+    self:UpdateAnimIconVisibility();
+    self:UpdateFavoriteIconVisibility();
 end
 
 -----------------
@@ -94,19 +95,17 @@ ExpressiveFrameEmoteBoxMixin = {};
 function ExpressiveFrameEmoteBoxMixin:OnLoad()
     self.DataProvider = CreateDataProvider();
 
-    local elementExtent = 35;
-
-    self.ScrollView = CreateScrollBoxListLinearView();
+    local stride = 2;
+    self.ScrollView = CreateScrollBoxListGridView(stride);
     self.ScrollView:SetDataProvider(self.DataProvider);
-    self.ScrollView:SetElementExtent(elementExtent);
     self.ScrollView:SetElementInitializer("ExpressiveFrameEmoteEntryTemplate", function(frame, data)
         frame:Init(data);
     end);
 
     local paddingTop = 8;
-    local paddingBottom = 10;
+    local paddingBottom = 0;
     local paddingLeft = 10;
-    local paddingRight = 0;
+    local paddingRight = 10;
     local spacing = 5;
 
     self.ScrollView:SetPadding(paddingTop, paddingBottom, paddingLeft, paddingRight, spacing);
@@ -115,14 +114,14 @@ function ExpressiveFrameEmoteBoxMixin:OnLoad()
     self.ScrollBar:SetInterpolateScroll(true);
     self.ScrollBar:SetHideIfUnscrollable(true);
 
-    ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, self.ScrollView);
+    ScrollUtil.InitScrollBoxWithScrollBar(self.ScrollBox, self.ScrollBar, self.ScrollView);
 end
 
 function ExpressiveFrameEmoteBoxMixin:RefreshDataProvider()
     self.ScrollView:FlushDataProvider();
 end
 
-function ExpressiveFrameEmoteBoxMixin:AddEmotePair(data)
+function ExpressiveFrameEmoteBoxMixin:AddEmote(data)
     self.DataProvider:Insert(data);
 end
 
@@ -176,17 +175,21 @@ function ExpressiveFramePageMixin:Init(pageType)
         self.EmoteBox:SetPoint("BOTTOMRIGHT", self.Background, "BOTTOMRIGHT");
     end
 
+    self.Initialized = false;
+
     self:Hide();
 end
 
-function ExpressiveFramePageMixin:AddEmotePair(data)
-    self.EmoteBox:AddEmotePair(data);
+function ExpressiveFramePageMixin:AddEmote(data)
+    self.EmoteBox:AddEmote(data);
 end
 
 function ExpressiveFramePageMixin:AddEmoteDataset(dataset)
-    for _, tbl in ipairs(dataset) do
-        self.EmoteBox:AddEmotePair(tbl);
+    for _, data in ipairs(dataset) do
+        self:AddEmote(data);
     end
+
+    self.Initialized = true;
 end
 
 local function CreatePage(parent, pageType, pageName)
@@ -216,8 +219,6 @@ ExpressiveFrameMixin:OnLoad();
 ExpressiveFrameMixin:GenerateCallbackEvents(
     {
         "PageChanged",
-        "FavoriteAdded",
-        "FavoriteRemoved",
         "FavoritesUpdated"
     }
 );
@@ -225,9 +226,12 @@ ExpressiveFrameMixin:GenerateCallbackEvents(
 function ExpressiveFrameMixin:OnLoad()
     self:SetTitle(addonName);
     self:SetMovable(true);
+    self:SetClampedToScreen(true);
+
+    self.Initialized = false;
 
     do
-        self.TitleContainer:EnableMouse(true);
+        self.TitleContainer:SetMouseClickEnabled(true);
         self.TitleContainer:RegisterForDrag("LeftButton");
         self.TitleContainer:SetScript("OnMouseDown", function()
             self:StartMoving();
@@ -235,6 +239,7 @@ function ExpressiveFrameMixin:OnLoad()
         self.TitleContainer:SetScript("OnMouseUp", function()
             self:StopMovingOrSizing();
         end);
+        self.TitleContainer:SetHitRectInsets(0, self.CloseButton:GetWidth(), 0, 0);
     end
 
     ButtonFrameTemplate_HidePortrait(self);
@@ -292,21 +297,16 @@ function ExpressiveFrameMixin:OnLoad()
         self:ChangePage(PAGE_TYPE.FAVORITES);
     end
 
-    self:RegisterCallback("PageChanged", self.OnPageChanged, self);
     self:RegisterCallback("FavoritesUpdated", self.OnFavoritesUpdated, self);
 end
 
 function ExpressiveFrameMixin:OnShow()
     if not Settings.IsInitialized() then
         EventUtil.ContinueOnAddOnLoaded(addonName, function() self:Populate(); end);
+    elseif self.Initialized then
+        self:RefreshFavorites();
     else
         self:Populate();
-    end
-end
-
-function ExpressiveFrameMixin:OnHide()
-    for _, page in ipairs(self.Pages) do
-        page.EmoteBox.DataProvider:Flush();
     end
 end
 
@@ -318,28 +318,8 @@ function ExpressiveFrameMixin:Toggle()
     end
 end
 
-function ExpressiveFrameMixin:Refresh()
-    for _, page in ipairs(self.Pages) do
-        page.EmoteBox:RefreshDataProvider();
-    end
-    self:Populate();
-end
-
-function ExpressiveFrameMixin:OnPageChanged(newPageType)
-end
-
-local function Profile(func, ...)
-    local startTime = debugprofilestop();
-    local results = {func(...);}
-    local endTime = debugprofilestop();
-    print("Execution took " .. endTime - startTime .. "ms");
-    return unpack(results);
-end
-
 function ExpressiveFrameMixin:OnFavoritesUpdated()
-    print("FavoritesUpdated");
-    Profile(function() self:Refresh(); end);
-    --self:Refresh();
+    self:RefreshFavorites();
 end
 
 function ExpressiveFrameMixin:ChangePage(pageType)
@@ -371,104 +351,68 @@ local function CreateDataFromEmoteToken(emoteToken)
     return data;
 end
 
-local function CreateDataPairs(emoteTokens)
+local function CreateDataset(emoteTokens)
     local dataset = {};
-    local deferred = {};
 
-    for i=1, #emoteTokens, 2 do
-        local tokenLeft = emoteTokens[i];
-        local tokenRight = emoteTokens[i+1];
-
-        local data = {};
-
-        if tokenLeft and tokenRight then
-            data.left = CreateDataFromEmoteToken(tokenLeft);
-            data.right = CreateDataFromEmoteToken(tokenRight);
-
-            tinsert(dataset, data);
-        elseif tokenLeft and not tokenRight then
-            tinsert(deferred, tokenLeft);
-        elseif tokenRight and not tokenLeft then
-            tinsert(deferred, tokenRight);
-        end
-    end
-
-    if #deferred > 0 then
-        for i=1, #deferred, 2 do
-            local tokenLeft = deferred[i];
-            local tokenRight = deferred[i+1];
-
-            local data = {};
-
-            if tokenLeft then
-                data.left = CreateDataFromEmoteToken(tokenLeft);
-            end
-
-            if tokenRight then
-                data.right = CreateDataFromEmoteToken(tokenRight);
-            end
-
-            if data.left then
-                tinsert(dataset, data);
-            end
-        end
+    for _, emoteToken in pairs(emoteTokens) do
+        tinsert(dataset, CreateDataFromEmoteToken(emoteToken));
     end
 
     return dataset;
 end
 
+local function CreateFavoritesDataset()
+    local favorites = Settings.GetFavorites();
+    return CreateDataset(favorites);
+end
+
+-----------------
+
+function ExpressiveFrameMixin:RefreshFavorites()
+    local page = self.Pages[PAGE_TYPE.FAVORITES];
+    local favorites = CreateFavoritesDataset();
+
+    page.EmoteBox:RefreshDataProvider();
+    page:AddEmoteDataset(favorites);
+end
+
 function ExpressiveFrameMixin:Populate()
-    local allEmotes = CreateDataPairs(ALL_EMOTE_TOKENS);
+    local allEmotes = CreateDataset(ALL_EMOTE_TOKENS);
     local animEmotes = {};
     local voiceEmotes = {};
     local favoriteEmotes = {};
 
+    ALL_EMOTES_DATA = allEmotes;
+
     -- distribute the buttons into their appropriate tables
-    for _, dataPair in pairs(allEmotes) do
-        for _, d in pairs(dataPair) do
-            if d.isAnimEmote then
-                tinsert(animEmotes, d);
-            end
-            if d.isVoiceEmote then
-                tinsert(voiceEmotes, d);
-            end
-            if d.isFavorite then
-                tinsert(favoriteEmotes, d);
-            end
+    for _, d in pairs(allEmotes) do
+        if d.isAnimEmote then
+            tinsert(animEmotes, d);
+        end
+        if d.isVoiceEmote then
+            tinsert(voiceEmotes, d);
+        end
+        if d.isFavorite then
+            tinsert(favoriteEmotes, d);
         end
     end
 
-    -- need to reassemble the buttons into pairs since the above loop splits them up
-    local function ReassemblePairsAndAddDataToPage(dataset, targetPage)
-        for i=1, #dataset, 2 do
-            local dataLeft = dataset[i];
-            local dataRight = dataset[i+1];
+    ALL_ANIM = animEmotes;
+    ALL_VOICE = voiceEmotes;
+    ALL_FAVORITE = favoriteEmotes;
 
-            local d = {};
-
-            if dataLeft then
-                d.left = dataLeft;
-            end
-
-            if dataRight then
-                d.right = dataRight;
-            end
-
-            targetPage:AddEmotePair(d);
-        end
-    end
-
-    local emotesPage = self.Pages[PAGE_TYPE.EMOTES];
     local favoritesPage = self.Pages[PAGE_TYPE.FAVORITES];
+    local emotesPage = self.Pages[PAGE_TYPE.EMOTES];
     local animPage = self.Pages[PAGE_TYPE.ANIM];
     local voicePage = self.Pages[PAGE_TYPE.VOICE];
 
+    favoritesPage:AddEmoteDataset(favoriteEmotes);
     emotesPage:AddEmoteDataset(allEmotes);
+    animPage:AddEmoteDataset(animEmotes);
+    voicePage:AddEmoteDataset(voiceEmotes);
 
-    ReassemblePairsAndAddDataToPage(favoriteEmotes, favoritesPage);
-    ReassemblePairsAndAddDataToPage(animEmotes, animPage);
-    ReassemblePairsAndAddDataToPage(voiceEmotes, voicePage);
+    self.Initialized = true;
 end
 
-
+-----------------
 

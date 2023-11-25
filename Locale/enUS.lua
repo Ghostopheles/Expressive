@@ -1,6 +1,6 @@
 local addonName, Expressive_Internal = ...;
 
-local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true);
+local L = LibStub("AceLocale-3.0"):NewLocale(addonName, "enUS", true, "raw");
 
 -- BEGIN LOCALIZATION
 
@@ -22,6 +22,7 @@ L["EMOTE_FORTHEALLIANCE"] = "For the Alliance";
 L["EMOTE_FORTHEHORDE"] = "For the Horde";
 L["EMOTE_CROSSARMS"] = "Cross arms";
 L["EMOTE_COVEREARS"] = "Cover ears";
+L["EMOTE_SHAKEFIST"] = "Shake fist";
 
 -- END LOCALIZATION
 

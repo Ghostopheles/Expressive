@@ -14,16 +14,10 @@ Expressive_Internal.Constants.PAGE_TYPE = {
 };
 Expressive_Internal.Constants.PAGE_TYPE_REV = tInvert(Expressive_Internal.Constants.PAGE_TYPE);
 
-Expressive_Internal.Constants.SpecialTreatmentEmoteTokens = {
-    "BRB",
-    "ATTACKMYTARGET",
-    "HEALME",
-    "HELPME",
-    "OPENFIRE",
-    "GOLFCLAP",
-    "MOUNTSPECIAL",
-    "FORTHEALLIANCE",
-    "FORTHEHORDE",
-    "CROSSARMS",
-    "COVEREARS",
-};
+SLASH_GEXPR1, SLASH_GEXPR2 = "/expr", "/expressive";
+
+SlashCmdList.GEXPR = function() ExpressiveFrame:Toggle(); end;
+
+function Expressive_OnAddonCompartmentClick()
+    ExpressiveFrame:Toggle();
+end

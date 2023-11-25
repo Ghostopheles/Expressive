@@ -37,7 +37,7 @@
         <Frames>
             <Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
                 <Anchors>
-                    <Anchor point="TOPLEFT" x="4" y="-4" />
+                    <Anchor point="TOPLEFT" x="4" y="0" />
                     <Anchor point="BOTTOMRIGHT" x="-4" y="4" />
                 </Anchors>
             </Frame>
@@ -53,19 +53,22 @@
         </Scripts>
     </Frame>
 
-    <Frame name="ExpressiveFrameEmoteEntryButtonTemplate" virtual="true">
+    <Frame name="ExpressiveFrameEmoteEntryTemplate" virtual="true" hidden="false"
+        mixin="ExpressiveFrameEmoteEntryMixin">
+        <Size x="100" y="50" />
         <Frames>
             <ItemButton parentKey="Button" mixin="ExpressiveFrameEmoteEntryButtonMixin">
                 <Size x="35" y="35" />
                 <Anchors>
                     <Anchor point="LEFT" x="5" y="0" />
                 </Anchors>
-                <HighlightTexture parentKey="HighlightTexture" atlas="Forge-ColorSwatchHighlight"
-                    alphaMode="ADD" scale="1.5" />
+                <HighlightTexture
+                    parentKey="HighlightTexture" atlas="bags-glow-white"
+                    alphaMode="ADD" setAllPoints="true" />
                 <Layers>
                     <Layer level="OVERLAY" textureSubLevel="7">
-                        <Texture parentKey="VoiceIcon" atlas="voicechat-icon-STT-on"
-                            hidden="true">
+                        <Texture parentKey="VoiceIcon" atlas="Ping_OVMarker_Pointer_OnMyWay"
+                            hidden="true" scale="1.5">
                             <Size x="25" y="25" />
                             <Anchors>
                                 <Anchor point="CENTER" relativePoint="TOPRIGHT" />
@@ -76,6 +79,22 @@
                             <Size x="25" y="25" />
                             <Anchors>
                                 <Anchor point="CENTER" relativePoint="TOPLEFT" />
+                            </Anchors>
+                        </Texture>
+                        <Texture parentKey="AnimIcon" atlas="Ping_Marker_Icon_NonThreat"
+                            hidden="true" scale="0.80">
+                            <Size x="25" y="25" />
+                            <Anchors>
+                                <Anchor point="CENTER" relativePoint="TOPRIGHT" />
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                    <Layer level="OVERLAY" textureSubLevel="4">
+                        <Texture parentKey="IconBackground" atlas="Ping_OVMarker_Pointer_OnMyWay"
+                            hidden="true">
+                            <Size x="25" y="25" />
+                            <Anchors>
+                                <Anchor point="CENTER" relativePoint="TOPRIGHT" />
                             </Anchors>
                         </Texture>
                     </Layer>
@@ -99,27 +118,8 @@
         </Layers>
     </Frame>
 
-    <Frame name="ExpressiveFrameEmoteEntryTemplate" virtual="true"
-        mixin="ExpressiveFrameEmoteEntryMixin">
-        <Frames>
-            <Frame parentKey="Left" inherits="ExpressiveFrameEmoteEntryButtonTemplate" hidden="true">
-                <Anchors>
-                    <Anchor point="TOPLEFT" />
-                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" />
-                </Anchors>
-            </Frame>
-            <Frame parentKey="Right" inherits="ExpressiveFrameEmoteEntryButtonTemplate"
-                hidden="true">
-                <Anchors>
-                    <Anchor point="TOPRIGHT" />
-                    <Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" />
-                </Anchors>
-            </Frame>
-        </Frames>
-    </Frame>
-
     <Frame name="ExpressiveFrame" inherits="PortraitFrameFlatTemplate" parent="UIParent"
-        mixin="ExpressiveFrameMixin" hidden="false">
+        mixin="ExpressiveFrameMixin" hidden="true">
         <Size x="350" y="500" />
         <Anchors>
             <Anchor point="CENTER" />
@@ -138,7 +138,6 @@
         <Scripts>
             <OnLoad method="OnLoad" inherit="append" />
             <OnShow method="OnShow" inherit="append" />
-            <OnHide method="OnHide" inherit="append" />
         </Scripts>
     </Frame>
 </Ui>

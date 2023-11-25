@@ -30,17 +30,95 @@ function Expressive_Internal.Utils.GetAllEmotes()
 end
 
 function Expressive_Internal.Utils.FormatEmoteToken(emoteToken)
-    if tContains(Expressive_Internal.Constants.SpecialTreatmentEmoteTokens, emoteToken) then
-        return L["EMOTE_"..emoteToken];
-    else
-        return Expressive_Internal.Utils.ConvertStringToTitleCase(emoteToken);
-    end
+    local customText = L["EMOTE_"..emoteToken];
+    return customText or Expressive_Internal.Utils.ConvertStringToTitleCase(emoteToken);
 end
 
+local REQUIRES_TARGET = {
+    "PROMISE"
+}
+
+local UNMARKED_ANIMATION_EMOTES = {
+    "ANGRY",
+    "CLAP",
+    "CHUCKLE",
+    "BASHFUL",
+    "BLUSH",
+    "CACKLE",
+    "COWER",
+    "CURIOUS",
+    "CURTSEY",
+    "DRINK",
+    "GASP",
+    "GIGGLE",
+    "GLOAT",
+    "GREET",
+    "GROVEL",
+    "GUFFAW",
+    "HAIL",
+    "LAYDOWN",
+    "MOURN",
+    "PLEAD",
+    "PRAY",
+    "ROFL",
+    "SHOUT",
+    "SHRUG",
+    "SURRENDER",
+    "TALKEX",
+    "TALKQ",
+    "VICTORY",
+    "BOGGLE",
+    "INSULT",
+    "LOST",
+    "PONDER",
+    "PUZZLE",
+    "TAUNT",
+    "VIOLIN",
+    "GROWL",
+    "SCARED",
+    "COMMEND",
+    "GOLFCLAP",
+    "BLAME",
+    "DISAGREE",
+    "DOUBT",
+    "MERCY",
+    "SING",
+    "OBJECT",
+    "YW",
+    "READ",
+    "FORTHEALLIANCE",
+    "WHOA",
+    "OOPS",
+    "BOOP",
+    "HUZZAH",
+    "IMPRESSED",
+    "MAGNIFICENT",
+    "QUACK"
+};
+
+local UNMARKED_VOICE_EMOTES = {
+    "APOLOGIZE",
+    "BORED",
+    "CHUCKLE",
+    "CACKLE",
+    "GIGGLE",
+    "GLOAT",
+    "MOURN",
+    "ROFL",
+    "SIGH",
+    "THREATEN",
+    "WHISTLE",
+    "YAWN",
+    "TAUNT",
+    "VIOLIN",
+    "WHOA",
+    "OOPS"
+};
+
 function Expressive_Internal.Utils.IsAnimEmote(emoteToken)
-    return tContains(EmoteList, emoteToken);
+    return tContains(EmoteList, emoteToken) or tContains(UNMARKED_ANIMATION_EMOTES, emoteToken);
 end
 
 function Expressive_Internal.Utils.IsVoiceEmote(emoteToken)
-    return tContains(TextEmoteSpeechList, emoteToken);
+    return tContains(TextEmoteSpeechList, emoteToken) or tContains(UNMARKED_VOICE_EMOTES, emoteToken);
 end
