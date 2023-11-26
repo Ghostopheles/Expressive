@@ -61,8 +61,6 @@ function ExpressiveFrameEmoteEntryMixin:Init(data)
     self.Button:SetIcon(data.icon);
     self.Button.VoiceIcon:SetRotation(math.pi/2);
 
-    --Ping_OVMarker_Pointer_OnMyWay
-
     self:UpdateSpecialIconVisibility();
 
     ExpressiveFrame:RegisterCallback("FavoritesUpdated", self.UpdateFavoriteIconVisibility, self);

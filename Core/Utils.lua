@@ -115,6 +115,8 @@ local UNMARKED_VOICE_EMOTES = {
     "OOPS"
 };
 
+-- /glower has had a spelling error since patch 3.0.1.8622, making this spelling error over 15 years old
+
 function Expressive_Internal.Utils.IsAnimEmote(emoteToken)
     return tContains(EmoteList, emoteToken) or tContains(UNMARKED_ANIMATION_EMOTES, emoteToken);
 end
