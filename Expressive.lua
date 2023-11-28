@@ -87,9 +87,6 @@ function ExpressiveFrameEmoteEntryMixin:RegisterHelpIconScripts()
     local animIcon = self.Button.AnimIcon;
     local voiceIcon = self.Button.VoiceIcon;
 
-    animIcon.IsAnim = true;
-    voiceIcon.IsVoice = true;
-
     animIcon:SetScript("OnEnter", self.OnHelpTextureEnter);
     voiceIcon:SetScript("OnEnter", self.OnHelpTextureEnter);
 
@@ -201,6 +198,23 @@ function ExpressiveFramePageMixin:Init(pageType)
         self.Header.Banner:SetAtlas("Adventures_MissionList");
         self.Header.Banner:SetPoint("TOPLEFT", 10, 0);
         self.Header.Banner:SetPoint("BOTTOMRIGHT", -10, 0);
+
+        if self.PageType == PAGE_TYPE.FAVORITES then
+            self.Header.WipeButton = CreateFrame("Button", nil, self.Header, "RefreshButtonTemplate");
+            self.Header.WipeButton:SetPoint("RIGHT", -15, 0);
+            self.Header.WipeButton:SetWidth(35);
+            self.Header.WipeButton:HookScript("OnEnter", function(self)
+                GameTooltip:SetOwner(self, "ANCHOR_TOP");
+                GameTooltip:SetText(L.FAVORITES_WIPE_BUTTON_TOOLTIP, 1, 1, 1);
+                GameTooltip:Show();
+            end);
+            self.Header.WipeButton:HookScript("OnLeave", function()
+                GameTooltip:Hide();
+            end);
+            self.Header.WipeButton:HookScript("OnClick", function()
+                StaticPopup_Show("EXPRESSIVE_WIPE_FAVORITES_CONFIRM");
+            end);
+        end
     end
 
     -- setup page background
@@ -414,6 +428,7 @@ end
 -----------------
 
 function ExpressiveFrameMixin:RefreshFavorites()
+    print("REFRESHFAVORITES")
     local page = self.Pages[PAGE_TYPE.FAVORITES];
     local favorites = CreateFavoritesDataset();
 
@@ -422,6 +437,11 @@ function ExpressiveFrameMixin:RefreshFavorites()
 end
 
 function ExpressiveFrameMixin:Populate()
+    if self.Initialized then
+        return;
+    end
+
+    print("POPULATE")
     local allEmotes = CreateDataset(ALL_EMOTE_TOKENS);
     local animEmotes = {};
     local voiceEmotes = {};
