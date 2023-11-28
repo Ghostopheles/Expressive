@@ -130,6 +130,33 @@ end
 
 -----------------
 
+ExpressiveFrameConfigBoxMixin = {};
+
+function ExpressiveFrameConfigBoxMixin:OnLoad()
+    if 1 == 1 then
+        do -- create automation section
+            self.AutomationHeader = self:CreateFontString(nil, nil, "GameFontHighlight");
+            self.AutomationHeader:SetPoint("TOPLEFT");
+            self.AutomationHeader:SetPoint("TOPRIGHT");
+            self.AutomationHeader:SetHeight(20);
+            self.AutomationHeader:SetJustifyH("CENTER");
+            self.AutomationHeader:SetScale(1.2);
+            self.AutomationHeader:SetText(L.CONFIG_HEADER_AUTOMATION);
+        end
+
+        do -- TRP3 automation
+            self.AutomationToggle = CreateFrame("CheckButton", nil, self, "UICheckButtonTemplate");
+            self.AutomationToggle:SetPoint("TOPLEFT", self.AutomationHeader, "BOTTOMLEFT", 20, -8);
+            self.AutomationToggle:SetSize(35, 35);
+
+            self.AutomationToggle.Text:SetText(L.CONFIG_TRP3_ENABLE_AUTOMATION);
+            self.AutomationToggle.Text:SetTextColor(1, 1, 1);
+        end
+    end
+end
+
+-----------------
+
 ExpressiveFrameEmoteBoxMixin = {};
 
 function ExpressiveFrameEmoteBoxMixin:OnLoad()
@@ -225,11 +252,15 @@ function ExpressiveFramePageMixin:Init(pageType)
         self.Background:SetPoint("BOTTOMRIGHT", -5, 3);
     end
 
-    -- setup page 'working' area
-    do
+    if self.PageType ~= PAGE_TYPE.CONFIG then
+        -- setup page 'working' area
         self.EmoteBox = CreateFrame("Frame", self:GetName().."EmoteBox", self, "ExpressiveFrameEmoteBoxTemplate");
         self.EmoteBox:SetPoint("TOPLEFT", self.Header, "BOTTOMLEFT", 0, -3);
         self.EmoteBox:SetPoint("BOTTOMRIGHT", self.Background, "BOTTOMRIGHT");
+    else
+        self.ConfigBox = CreateFrame("Frame", self:GetName().."ConfigBox", self, "ExpressiveFrameConfigBoxTemplate");
+        self.ConfigBox:SetPoint("TOPLEFT", self.Header, "BOTTOMLEFT", 0, -3);
+        self.ConfigBox:SetPoint("BOTTOMRIGHT", self.Background, "BOTTOMRIGHT");
     end
 
     self.Initialized = false;
@@ -329,6 +360,12 @@ function ExpressiveFrameMixin:OnLoad()
         voiceButton.TooltipText = L.PAGE_TITLE_VOICE;
         tinsert(menuBar.Buttons, voiceButton);
 
+        local configButton = CreateFrame("Button", menuBar:GetName().."ConfigButton", menuBar, "ExpressiveFrameMenuBarButtonTemplate");
+        configButton:SetPoint("TOPRIGHT", -15, -5);
+        configButton.PageType = PAGE_TYPE.CONFIG;
+        configButton.TooltipText = L.PAGE_TITLE_CONFIG;
+        tinsert(menuBar.Buttons, configButton);
+
         self:RegisterCallback("PageChanged", function(_, newPageType)
             for _, button in ipairs(menuBar.Buttons) do
                 button:UpdateActiveTexture(newPageType);
@@ -351,7 +388,8 @@ function ExpressiveFrameMixin:OnLoad()
         local voicePage = CreatePage(self.Bg, PAGE_TYPE.VOICE, self:GetName().."VoicePage");
         tinsert(self.Pages, PAGE_TYPE.VOICE, voicePage);
 
-        self:ChangePage(PAGE_TYPE.FAVORITES);
+        local configPage = CreatePage(self.Bg, PAGE_TYPE.CONFIG, self:GetName().."ConfigPage");
+        tinsert(self.Pages, PAGE_TYPE.CONFIG, configPage);
     end
 
     self:RegisterCallback("FavoritesUpdated", self.OnFavoritesUpdated, self);
@@ -441,7 +479,6 @@ function ExpressiveFrameMixin:Populate()
         return;
     end
 
-    print("POPULATE")
     local allEmotes = CreateDataset(ALL_EMOTE_TOKENS);
     local animEmotes = {};
     local voiceEmotes = {};
@@ -475,6 +512,8 @@ function ExpressiveFrameMixin:Populate()
     emotesPage:AddEmoteDataset(allEmotes);
     animPage:AddEmoteDataset(animEmotes);
     voicePage:AddEmoteDataset(voiceEmotes);
+
+    self:ChangePage(Settings.GetDefaultPage());
 
     self.Initialized = true;
 end

@@ -11,6 +11,7 @@ Expressive_Internal.Constants.PAGE_TYPE = {
     EMOTES = 2,
     ANIM = 3,
     VOICE = 4,
+    CONFIG = 5,
 };
 Expressive_Internal.Constants.PAGE_TYPE_REV = tInvert(Expressive_Internal.Constants.PAGE_TYPE);
 

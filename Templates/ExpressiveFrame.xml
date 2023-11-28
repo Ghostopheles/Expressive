@@ -33,6 +33,13 @@
         </Layers>
     </Button>
 
+    <Frame name="ExpressiveFrameConfigBoxTemplate" virtual="true"
+        mixin="ExpressiveFrameConfigBoxMixin">
+        <Scripts>
+            <OnLoad method="OnLoad" />
+        </Scripts>
+    </Frame>
+
     <Frame name="ExpressiveFrameEmoteBoxTemplate" virtual="true"
         mixin="ExpressiveFrameEmoteBoxMixin">
         <Frames>

@@ -8,6 +8,13 @@ L["PAGE_TITLE_FAVORITES"] = "Favorites";
 L["PAGE_TITLE_EMOTES"] = "All Emotes";
 L["PAGE_TITLE_ANIM"] = "Animation Emotes";
 L["PAGE_TITLE_VOICE"] = "Voice Emotes";
+L["PAGE_TITLE_CONFIG"] = "Configuration";
+
+--- CONFIG STRINGS
+
+L["CONFIG_HEADER_BASE"] = "Preferences";
+L["CONFIG_HEADER_AUTOMATION"] = "Automation";
+L["CONFIG_TRP3_ENABLE_AUTOMATION"] = "Enable TRP3 Automation";
 
 --- CUSTOM EMOTE NAMES
 
