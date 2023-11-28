@@ -24,6 +24,13 @@ L["EMOTE_CROSSARMS"] = "Cross arms";
 L["EMOTE_COVEREARS"] = "Cover ears";
 L["EMOTE_SHAKEFIST"] = "Shake fist";
 
+--- OTHER TEXTS
+
+L["HELP_ICON_TOOLTIP_TEXT"] = "This emote plays %s.";
+L["HELP_ICON_TOOLTIP_ANIM_ONLY"] = "an animation";
+L["HELP_ICON_TOOLTIP_VOICE_ONLY"] = "a voice line";
+L["HELP_ICON_TOOLTIP_BOTH"] = "an animation and a voice line";
+
 -- END LOCALIZATION
 
 

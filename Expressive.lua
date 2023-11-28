@@ -23,7 +23,7 @@ function ExpressiveFrameEmoteEntryButtonMixin:ToggleFavorite()
         Settings.AddFavorite(emoteToken);
     end
 
-    self:GetParent():UpdateFavoriteState();
+    self:GetParent():UpdateFavoriteIconVisibility();
 end
 
 function ExpressiveFrameEmoteEntryButtonMixin:OnClick()
@@ -35,6 +35,14 @@ function ExpressiveFrameEmoteEntryButtonMixin:OnClick()
     end
 end
 
+function ExpressiveFrameEmoteEntryButtonMixin:OnEnter()
+    self.HighlightTexture:Show();
+end
+
+function ExpressiveFrameEmoteEntryButtonMixin:OnLeave()
+    self.HighlightTexture:Hide();
+end
+
 function ExpressiveFrameEmoteEntryButtonMixin:SetIcon(icon)
     self.icon:SetTexture(icon);
 end
@@ -42,10 +50,6 @@ end
 -----------------
 
 ExpressiveFrameEmoteEntryMixin = {};
-
---TODO: remove these after debugging 
-NUM_EMOTES_ADDED = 0;
-EMOTES_ADDED = {};
 
 function ExpressiveFrameEmoteEntryMixin:Init(data)
     local height = 45;
@@ -59,15 +63,19 @@ function ExpressiveFrameEmoteEntryMixin:Init(data)
 
     self.Label:SetText(data.name);
     self.Button:SetIcon(data.icon);
-    self.Button.VoiceIcon:SetRotation(math.pi/2);
 
     self:UpdateSpecialIconVisibility();
+    self:RegisterHelpIconScripts();
 
     ExpressiveFrame:RegisterCallback("FavoritesUpdated", self.UpdateFavoriteIconVisibility, self);
 end
 
-function ExpressiveFrameEmoteEntryMixin:UpdateVoiceIconVisibility()
-    self.Button.VoiceIcon:SetShown(self.IsVoiceEmote);
+function ExpressiveFrameEmoteEntryMixin:UpdateSpecialIconVisibility()
+    self:UpdateFavoriteIconVisibility();
+
+    local animIcon, voiceIcon = self.Button.AnimIcon, self.Button.VoiceIcon;
+    animIcon:SetShown(self.IsAnimEmote);
+    voiceIcon:SetShown(self.IsVoiceEmote);
 end
 
 function ExpressiveFrameEmoteEntryMixin:UpdateFavoriteIconVisibility()
@@ -75,15 +83,52 @@ function ExpressiveFrameEmoteEntryMixin:UpdateFavoriteIconVisibility()
     self.Button.FavoriteIcon:SetShown(self.IsFavorite);
 end
 
-function ExpressiveFrameEmoteEntryMixin:UpdateAnimIconVisibility()
-    self.Button.AnimIcon:SetShown(self.IsAnimEmote or self.IsVoiceEmote);
+function ExpressiveFrameEmoteEntryMixin:RegisterHelpIconScripts()
+    local animIcon = self.Button.AnimIcon;
+    local voiceIcon = self.Button.VoiceIcon;
+
+    animIcon.IsAnim = true;
+    voiceIcon.IsVoice = true;
+
+    animIcon:SetScript("OnEnter", self.OnHelpTextureEnter);
+    voiceIcon:SetScript("OnEnter", self.OnHelpTextureEnter);
+
+    animIcon:SetScript("OnLeave", self.OnHelpTextureLeave);
+    voiceIcon:SetScript("OnLeave", self.OnHelpTextureLeave);
 end
 
-function ExpressiveFrameEmoteEntryMixin:UpdateSpecialIconVisibility()
-    --self.Button.IconBackground:SetShown(self.IsAnimEmote or self.IsVoiceEmote);
-    self:UpdateVoiceIconVisibility();
-    self:UpdateAnimIconVisibility();
-    self:UpdateFavoriteIconVisibility();
+--- takes in the above helpIcon as self
+function ExpressiveFrameEmoteEntryMixin:OnHelpTextureEnter()
+    if not self:IsShown() then
+        return;
+    end
+
+    local tooltipText = L.HELP_ICON_TOOLTIP_TEXT;
+    local parentEntry = self:GetParent():GetParent();
+    local isAnim, isVoice = parentEntry.IsAnimEmote, parentEntry.IsVoiceEmote;
+
+    if isAnim and isVoice then
+        tooltipText = format(tooltipText, L.HELP_ICON_TOOLTIP_BOTH);
+    elseif isAnim then
+        tooltipText = format(tooltipText, L.HELP_ICON_TOOLTIP_ANIM_ONLY);
+    elseif isVoice then
+        tooltipText = format(tooltipText, L.HELP_ICON_TOOLTIP_VOICE_ONLY);
+    else
+        return;
+    end
+
+    GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
+    GameTooltip:SetText(tooltipText, 1, 1, 1);
+    GameTooltip:Show();
+end
+
+--- takes in the icon texture as self
+function ExpressiveFrameEmoteEntryMixin:OnHelpTextureLeave()
+    if not self:IsShown() then
+        return;
+    end
+
+    GameTooltip:Hide();
 end
 
 -----------------
@@ -249,25 +294,25 @@ function ExpressiveFrameMixin:OnLoad()
         local favoritesButton = CreateFrame("Button", menuBar:GetName().."FavoritesButton", menuBar, "ExpressiveFrameMenuBarButtonTemplate");
         favoritesButton:SetPoint("LEFT", 5, 0);
         favoritesButton.PageType = PAGE_TYPE.FAVORITES;
-        favoritesButton.TooltipText = L["PAGE_TITLE_FAVORITES"];
+        favoritesButton.TooltipText = L.PAGE_TITLE_FAVORITES;
         tinsert(menuBar.Buttons, favoritesButton);
 
         local emotesButton = CreateFrame("Button", menuBar:GetName().."EmotesButton", menuBar, "ExpressiveFrameMenuBarButtonTemplate");
         emotesButton:SetPoint("LEFT", favoritesButton, "RIGHT", 5);
         emotesButton.PageType = PAGE_TYPE.EMOTES;
-        emotesButton.TooltipText = L["PAGE_TITLE_EMOTES"];
+        emotesButton.TooltipText = L.PAGE_TITLE_EMOTES;
         tinsert(menuBar.Buttons, emotesButton);
 
         local animButton = CreateFrame("Button", menuBar:GetName().."AnimEmotesButton", menuBar, "ExpressiveFrameMenuBarButtonTemplate");
         animButton:SetPoint("LEFT", emotesButton, "RIGHT", 5);
         animButton.PageType = PAGE_TYPE.ANIM;
-        animButton.TooltipText = L["PAGE_TITLE_ANIM"];
+        animButton.TooltipText = L.PAGE_TITLE_ANIM;
         tinsert(menuBar.Buttons, animButton);
 
         local voiceButton = CreateFrame("Button", menuBar:GetName().."VoiceEmotesButton", menuBar, "ExpressiveFrameMenuBarButtonTemplate");
         voiceButton:SetPoint("LEFT", animButton, "RIGHT", 5);
         voiceButton.PageType = PAGE_TYPE.VOICE;
-        voiceButton.TooltipText = L["PAGE_TITLE_VOICE"];
+        voiceButton.TooltipText = L.PAGE_TITLE_VOICE;
         tinsert(menuBar.Buttons, voiceButton);
 
         self:RegisterCallback("PageChanged", function(_, newPageType)
@@ -296,6 +341,8 @@ function ExpressiveFrameMixin:OnLoad()
     end
 
     self:RegisterCallback("FavoritesUpdated", self.OnFavoritesUpdated, self);
+
+    self:Show();
 end
 
 function ExpressiveFrameMixin:OnShow()
@@ -322,7 +369,7 @@ end
 
 function ExpressiveFrameMixin:ChangePage(pageType)
     local newPage = self.Pages[pageType];
-    assert(newPage, "Requested page does not exist.");
+    assert(newPage, format("Requested page (%d) does not exist.", pageType));
 
     if self.CurrentPage then
         self.CurrentPage:Hide();

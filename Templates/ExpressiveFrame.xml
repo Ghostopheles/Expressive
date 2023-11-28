@@ -1,5 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
+
     <Button name="ExpressiveFrameMenuBarButtonTemplate" virtual="true"
         inherits="AlphaHighlightButtonTemplate" mixin="ExpressiveFrameMenuBarButtonMixin">
         <Size x="35" y="35" />
@@ -62,13 +63,10 @@
                 <Anchors>
                     <Anchor point="LEFT" x="5" y="0" />
                 </Anchors>
-                <HighlightTexture
-                    parentKey="HighlightTexture" atlas="bags-glow-white"
-                    alphaMode="ADD" setAllPoints="true" />
                 <Layers>
                     <Layer level="OVERLAY" textureSubLevel="7">
-                        <Texture parentKey="VoiceIcon" atlas="Ping_OVMarker_Pointer_OnMyWay"
-                            hidden="true" scale="1.5">
+                        <Texture parentKey="AnimIcon" atlas="poi-scrapper"
+                            hidden="true" scale="0.80">
                             <Size x="25" y="25" />
                             <Anchors>
                                 <Anchor point="CENTER" relativePoint="TOPRIGHT" />
@@ -81,26 +79,26 @@
                                 <Anchor point="CENTER" relativePoint="TOPLEFT" />
                             </Anchors>
                         </Texture>
-                        <Texture parentKey="AnimIcon" atlas="Ping_Marker_Icon_NonThreat"
-                            hidden="true" scale="0.80">
+                    </Layer>
+                    <Layer level="OVERLAY" textureSubLevel="4">
+                        <Texture parentKey="VoiceIcon" atlas="voicechat-icon-speaker"
+                            hidden="true" scale="0.70">
                             <Size x="25" y="25" />
                             <Anchors>
                                 <Anchor point="CENTER" relativePoint="TOPRIGHT" />
                             </Anchors>
                         </Texture>
                     </Layer>
-                    <Layer level="OVERLAY" textureSubLevel="4">
-                        <Texture parentKey="IconBackground" atlas="Ping_OVMarker_Pointer_OnMyWay"
-                            hidden="true">
-                            <Size x="25" y="25" />
-                            <Anchors>
-                                <Anchor point="CENTER" relativePoint="TOPRIGHT" />
-                            </Anchors>
+                    <Layer level="OVERLAY" textureSubLevel="2">
+                        <Texture parentKey="HighlightTexture" atlas="bags-glow-white"
+                            hidden="true" alphaMode="ADD" setAllPoints="true">
                         </Texture>
                     </Layer>
                 </Layers>
                 <Scripts>
                     <OnClick method="OnClick" />
+                    <OnEnter method="OnEnter" />
+                    <OnLeave method="OnLeave" />
                 </Scripts>
             </ItemButton>
         </Frames>
@@ -120,7 +118,7 @@
 
     <Frame name="ExpressiveFrame" inherits="PortraitFrameFlatTemplate" parent="UIParent"
         mixin="ExpressiveFrameMixin" hidden="true">
-        <Size x="350" y="500" />
+        <Size x="350" y="525" />
         <Anchors>
             <Anchor point="CENTER" />
         </Anchors>
