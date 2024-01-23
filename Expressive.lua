@@ -177,8 +177,8 @@ function ExpressiveFrameEmoteBoxMixin:OnLoad()
 
     self.ScrollView:SetPadding(paddingTop, paddingBottom, paddingLeft, paddingRight, spacing);
 
-    self.ScrollBox:SetInterpolateScroll(true);
-    self.ScrollBar:SetInterpolateScroll(true);
+    --self.ScrollBox:SetInterpolateScroll(true);
+    --self.ScrollBar:SetInterpolateScroll(true);
     self.ScrollBar:SetHideIfUnscrollable(true);
 
     ScrollUtil.InitScrollBoxWithScrollBar(self.ScrollBox, self.ScrollBar, self.ScrollView);
@@ -393,8 +393,6 @@ function ExpressiveFrameMixin:OnLoad()
     end
 
     self:RegisterCallback("FavoritesUpdated", self.OnFavoritesUpdated, self);
-
-    self:Show();
 end
 
 function ExpressiveFrameMixin:OnShow()
